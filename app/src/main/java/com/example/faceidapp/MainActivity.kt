@@ -20,12 +20,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import com.example.faceidapp.ui.theme.FaceIDAppTheme
+import com.google.firebase.crashlytics.internal.common.CommonUtils
+import com.scottyab.rootbeer.RootBeer
 
 class MainActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val biometricAuthenticator = BiometricAuthenticator(this)
+        val context = this
+        val biometricAuthenticator = BiometricAuthenticator(context)
+        val rootBeer = RootBeer(context)
 
         enableEdgeToEdge()
         setContent {
@@ -37,6 +41,15 @@ class MainActivity : FragmentActivity() {
                 ) {
                     val activity = LocalContext.current as FragmentActivity
                     var message by remember { mutableStateOf("") }
+
+                    val isRooted = CommonUtils.isRooted()
+                    val isEmulator = CommonUtils.isEmulator()
+
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Text(text = "Rooted: $isRooted")
+                    Text(text = "Emulator: $isEmulator")
+                    Text(text = "RootBeer(rooted): ${rootBeer.isRooted}")
+                    Text(text = "RootBeer with busybox(rooted): ${rootBeer.isRootedWithBusyBoxCheck}")
 
                     TextButton(onClick = {
                         biometricAuthenticator.promptBiometricAuth(
