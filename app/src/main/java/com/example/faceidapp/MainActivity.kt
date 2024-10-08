@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.getValue
@@ -41,17 +43,36 @@ class MainActivity : FragmentActivity() {
                 ) {
                     val activity = LocalContext.current as FragmentActivity
                     var message by remember { mutableStateOf("") }
+                    var checkMessages by remember { mutableStateOf(listOf<String>()) }
 
-                    val isRooted = CommonUtils.isRooted()
-                    val isEmulator = CommonUtils.isEmulator()
+
+
+                    Button(
+                        onClick = {
+                            val isRooted = CommonUtils.isRooted()
+                            val isEmulator = CommonUtils.isEmulator()
+                            val isRootBeerRooted = rootBeer.isRooted
+                            val isRootBeerRootedWithBusyBoxCheck = rootBeer.isRootedWithBusyBoxCheck
+                            checkMessages = listOf(
+                                "Firebase(rooted): $isRooted",
+                                "Firebase Emulator: $isEmulator",
+                                "RootBeer(rooted): $isRootBeerRooted",
+                                "RootBeer with busybox(rooted): $isRootBeerRootedWithBusyBoxCheck"
+                            )
+                        }
+                    ) {
+                        Text(text = "Check")
+                    }
 
                     Spacer(modifier = Modifier.height(10.dp))
-                    Text(text = "Rooted: $isRooted")
-                    Text(text = "Emulator: $isEmulator")
-                    Text(text = "RootBeer(rooted): ${rootBeer.isRooted}")
-                    Text(text = "RootBeer with busybox(rooted): ${rootBeer.isRootedWithBusyBoxCheck}")
 
-                    TextButton(onClick = {
+                    for (txt in checkMessages) {
+                        Text(text = txt)
+                    }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Button(onClick = {
                         biometricAuthenticator.promptBiometricAuth(
                             title = "Login",
                             subTitle = "Use your fingerprint or face ID",
@@ -68,7 +89,7 @@ class MainActivity : FragmentActivity() {
                             }
                         )
                     }) {
-                        Text(text = "Authenticate")
+                        Text(text = "Face ID or Fingerprint")
                     }
                     Spacer(modifier = Modifier.height(10.dp))
                     Text(text = message)
